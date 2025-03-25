@@ -1,37 +1,28 @@
-import  WebSocket, { WebSocketServer } from "ws";
 
+import express from "express";
 
-const wss = new WebSocketServer({port:8080});
+import { createServer } from "http";
+import { Server, Socket } from "socket.io";
+import { UserManger } from "./managers/userManger";
 
-let senderSocket:null|WebSocket = null;
-let receiverSocket:null|WebSocket = null;
+const app = express();
+const server = createServer(app);
+const io = new Server(server, { 
+    cors: {
+         origin :"*"
+    }
+ });
+ const userManger = new UserManger()
 
+io.on("connection", (socket : Socket) => {
+  console.log(" A user connected");
+  userManger.addUser("randomName" , socket)
+socket.on("disconnected" , () => {
+  console.log(" A user disconnected")
+  userManger.removeUser(socket.id)
+   });
+});
 
-wss.on('connection', function connection(ws) {
-    ws.on('error', console.error);
-  
-    ws.on('message', function message(data : any) {
-        const message = JSON.parse(data);
-        if(message.type === 'sender') {
-            senderSocket = ws;
-        }else if (message.type === 'receiver') {
-            receiverSocket = ws;
-        } else if (message.type === 'createOffer') {
-            if(ws!==senderSocket) {
-                return;
-            }
-            receiverSocket?.send(JSON.stringify({type:"createOffer", sdp:message.sdp}));
-        } else if (message.type === 'createAnswer') {
-            if(ws!==receiverSocket) {
-                return;
-            }
-            senderSocket?.send(JSON.stringify({type:'createAnswer' , sdp:message.sdp}));
-        } else if (message.type === 'iceCandidate') {
-            if(ws === receiverSocket) {
-                senderSocket?.send(JSON.stringify({type:'iceCandidate' , candidate:message.candidate}))
-            }else if (ws === senderSocket) {
-                receiverSocket?.send(JSON.stringify({type : 'iceCandidate' , candidate : message.candidate}))
-            }
-        }
-    });
-  });
+server.listen(3000, () => {
+  console.log('listening on * : 3000')
+})
