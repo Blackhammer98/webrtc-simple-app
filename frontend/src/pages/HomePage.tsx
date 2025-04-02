@@ -22,7 +22,7 @@ export function HomePage() {
             console.log('New room Id is received :' , roomId)
             setGeneratedRoomId(roomId);
             navigate(`/room/${roomId}`);
-        });
+        })
 
         socket.on('joinedRoom',(roomId : string) => {
             console.log('Joined Room:' , roomId);

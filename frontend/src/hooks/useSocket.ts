@@ -16,7 +16,7 @@ const setUserName = useSetRecoilState(userNameState);
 
 useEffect(() => {
  const newSocket = io(SERVER_URL,{
-    autoConnect : false
+    autoConnect : true
  });
  setSocket(newSocket);
 
@@ -59,6 +59,7 @@ return () => {
 
 const requestNewRoomId = useCallback(() => {
 if(socket && isConnected) {
+  console.log('Emitting requestNewRoomId');
     socket.emit('requestNewRoomId');
 }else {
     console.warn('Socket not connected , cannot request new Room Id');
@@ -68,7 +69,7 @@ if(socket && isConnected) {
 
 const createRoom = useCallback((roomId : string) => {
   if(socket && isConnected) {
-    socket.emit('creatRoom', roomId);
+    socket.emit('createRoom', roomId);
   }else {
     console.warn("Scoket not Connected , cannot create room")
     setSocketError("Not connected to server")
@@ -77,6 +78,7 @@ const createRoom = useCallback((roomId : string) => {
 
 const joinRoom = useCallback((roomId : string) => {
   if(socket && isConnected) {
+    console.log('Emitting joinRoom:', roomId);
     socket.emit('joinRoom' , roomId);
   }else { 
     console.warn("Scoket not Connected , cannot join room")
