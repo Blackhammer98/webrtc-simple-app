@@ -3,7 +3,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 import { HomePage } from './pages/HomePage'
-import { RoomPage } from './pages/RoomPage'
+import  RoomPage  from './pages/RoomPage'
 
 
 function App() {
